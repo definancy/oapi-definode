@@ -34,6 +34,10 @@ tags:
     description: |-
       Payment processing and transaction management for vault-based financial operations.
 
+servers:
+  - url: https://definancy.xboshy.io
+    description: Stub server
+
 paths:
   # Probes
   /api/v1/healthy:
