@@ -777,7 +777,7 @@ paths:
           $ref: "#/components/responses/DefaultResponse"
 
   # Vault - Payment Collection - Document
-  /api/v1/vault/{vaultId}/payment-collection/{paymentCollectionId}/document:
+  /api/v1/vault/{vaultId}/payment-collection/{paymentCollectionId}/document/{documentId}:
     put:
       operationId: LinkPaymentCollectionDocument
       summary: Link Document to Payment Collection
@@ -790,12 +790,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
         - $ref: "#/components/parameters/PaymentCollectionIdParam"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DocumentId"
-        required: true
+        - $ref: "#/components/parameters/DocumentIdParam"
       responses:
         "200":
           description: |-
@@ -803,7 +798,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Document"
+                $ref: "#/components/schemas/PaymentCollection"
           headers:
             Cache-Control:
               $ref: "#/components/headers/CacheControlHeader"
@@ -817,7 +812,6 @@ paths:
           $ref: "#/components/responses/NotFoundResponse"
         default:
           $ref: "#/components/responses/DefaultResponse"
-  /api/v1/vault/{vaultId}/payment-collection/{paymentCollectionId}/document/{documentId}:
     delete:
       operationId: UnlinkPaymentCollectionDocument
       summary: Unlink Document from Payment Collection
@@ -837,7 +831,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Document"
+                $ref: "#/components/schemas/PaymentCollection"
           headers:
             Cache-Control:
               $ref: "#/components/headers/CacheControlHeader"
@@ -1894,7 +1888,7 @@ components:
           description: |-
             Associated documents (optional).
           items:
-            $ref: "#/components/schemas/Document"
+            $ref: "#/components/schemas/DocumentId"
     "PaymentCollection":
       type: object
       description: |-
