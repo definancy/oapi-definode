@@ -892,7 +892,7 @@ paths:
           $ref: "#/components/responses/DefaultResponse"
 
   # Vault - Document
-  /api/v1/vault/{vaultId}/doc:
+  /api/v1/vault/{vaultId}/document:
     post:
       operationId: SubmitDocument
       summary: Submit Document
@@ -936,7 +936,7 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
 
-  /api/v1/vault/{vaultId}/doc/{documentId}:
+  /api/v1/vault/{vaultId}/document/{documentId}:
     get:
       operationId: GetDocument
       summary: Get Document
@@ -1706,14 +1706,11 @@ components:
       properties:
         "type":
           $ref: "#/components/schemas/DocumentType"
-        "doc":
-          oneOf:
-            - $ref: "#/components/schemas/PersonV1"
-            - $ref: "#/components/schemas/CustodialV1"
-            - $ref: "#/components/schemas/NonCustodialV1"
+        "data":
+          $ref: "#/components/schemas/DocumentData"
       required:
         - "type"
-        - "doc"
+        - "data"
     "DocumentType":
       type: string
       description: |-
@@ -1722,6 +1719,12 @@ components:
         - "PersonV1"
         - "CustodialV1"
         - "NonCustodialV1"
+    "DocumentData":
+      type: object
+      oneOf:
+        - $ref: "#/components/schemas/PersonV1"
+        - $ref: "#/components/schemas/CustodialV1"
+        - $ref: "#/components/schemas/NonCustodialV1"
     "DocumentStatus":
       type: object
       description: |-
