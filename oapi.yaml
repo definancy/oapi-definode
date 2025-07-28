@@ -4,35 +4,66 @@ info:
   version: 0.0.1.wip.20250723
   description: |-
     REST API for managing asset, network and contract configurations, and vault-based financial operations.
+    This API provides a comprehensive set of endpoints for health monitoring, network management, asset 
+    configuration, contract management, vault lifecycle management, and QR-Code generation. It is designed
+    to facilitate seamless integration with financial systems, ensuring secure and efficient payment 
+    processing while maintaining strict compliance standards.
 
 tags:
   - name: Probe
     description: |-
       Health monitoring endpoints for verifying service availability and operational status.
+      These endpoints allow you to check if the service is alive and ready to accept traffic, 
+      ensuring that your applications can rely on the Definancy service for their operations.
   - name: Network
     description: |-
       Network configuration and status management.
+      This section includes endpoints for retrieving and managing network configurations, which
+      are essential for setting up and maintaining networks for payment processing.
   - name: Asset
     description: |-
       Asset configuration and status management.
+      These endpoints allow you to manage digital assets, including retrieving and updating
+      asset configurations, which is crucial for handling various cryptocurrencies and tokens
+      in payment operations.
   - name: Contract
     description: |-
       Contract configuration and status management.
+      This section provides endpoints for managing contracts, including retrieving and
+      updating contract configurations, which is vital for executing and validating payments
+      on networks.
   - name: Vault
     description: |-
       Vault lifecycle management and configuration.
+      These endpoints enable you to manage vaults, which are containers for payment collections,
+      documents, and contract subscriptions. Vaults are essential for organizing and processing
+      payments while maintaining compliance.
   - name: Vault - Contract Subscription
     description: |-
       Management of vault contract associations within vaults.
+      This section includes endpoints for subscribing and unsubscribing contracts to vaults,
+      allowing you to control which contracts are active in specific vaults for payment processing.
   - name: Vault - Document
     description: |-
       Documents management within vaults.
+      These endpoints allow you to submit, retrieve, and archive documents related to payment
+      collections, ensuring that all necessary compliance documents are managed efficiently.
   - name: Vault - Estimate
     description: |-
       Payment estimation for vault-based financial operations.
+      This section provides endpoints for generating payment estimates, which helps in calculating
+      the required payment amounts for various contracts and scenarios.
   - name: Vault - Payment Collection
     description: |-
       Payment processing and transaction management for vault-based financial operations.
+      These endpoints enable you to create, retrieve, update, and archive payment collections,
+      which are essential for executing payments and tracking their status.
+  - name: QR-Code
+    description: |-
+      QR-Code generator.
+      This section includes endpoints for generating QR codes, which are used for facilitating
+      blockchain transactions by encoding payment instructions that can be scanned by cryptocurrency
+      wallets.
 
 servers:
   - url: https://definancy.xboshy.io
@@ -46,6 +77,8 @@ paths:
       summary: Health Check
       description: |-
         Verifies service liveness. Returns OK when operational.
+        This endpoint is used to check if the service is alive and ready to handle requests, 
+        ensuring that your applications can rely on the Definancy service for their operations.
       tags:
         - Probe
       responses:
@@ -68,6 +101,8 @@ paths:
       summary: Ready Check
       description: |-
         Verifies service readiness. Returns OK when ready to accept traffic.
+        This endpoint checks if the service is ready to handle incoming requests, ensuring
+        that your applications can rely on the Definancy service for their operations.
       tags:
         - Probe
       responses:
@@ -91,6 +126,8 @@ paths:
       summary: List Networks
       description: |-
         Retrieves all configured networks.
+        This endpoint returns a list of all configured networks, which are essential for 
+        setting up and maintaining networks for payment processing.
       tags:
         - Network
       responses:
@@ -119,6 +156,9 @@ paths:
       summary: Get Network
       description: |-
         Retrieves configuration details for a specific network.
+        This endpoint returns detailed configuration information for a specific
+        network, which is essential for managing and maintaining networks for 
+        payment processing.
       tags:
         - Network
       parameters:
@@ -147,6 +187,9 @@ paths:
       summary: Configure Network
       description: |-
         Updates configuration parameters for a network.
+        This endpoint allows you to update configuration parameters for a specific
+        network, which is essential for managing and maintaining networks for 
+        payment processing.
       tags:
         - Network
       parameters:
@@ -184,6 +227,38 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
 
+  /api/v1/network/{networkId}/native:
+    get:
+      operationId: GetNetworkNativeAsset
+      summary: Get Network Native Asset
+      description: |-
+        Retrieves the native asset of a specific network in a form of a contract.
+        This endpoint returns the native asset of a specific network in the form of a contract, 
+        which is essential for understanding and managing the native token of a network.
+      tags:
+        - Network
+      parameters:
+        - $ref: "#/components/parameters/NetworkIdParam"
+      responses:
+        "200":
+          description: |-
+            The contract with the network's native asset details is retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contract"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlHeader"
+        "401":
+          $ref: "#/components/responses/MissingAuthorizationResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        default:
+          $ref: "#/components/responses/DefaultResponse"
+
   # Asset
   /api/v1/asset:
     get:
@@ -191,6 +266,8 @@ paths:
       summary: List Assets
       description: |-
         Retrieves all configured digital assets.
+        This endpoint returns a list of all configured digital assets, which are essential
+        for handling various assets in payment operations.
       tags:
         - Asset
       responses:
@@ -219,6 +296,8 @@ paths:
       summary: Get Asset
       description: |-
         Retrieves configuration details for a specific digital asset.
+        This endpoint returns detailed configuration information for a specific digital asset,
+        which is essential for managing and handling various assets in payment operations.
       tags:
         - Asset
       parameters:
@@ -247,6 +326,8 @@ paths:
       summary: Configure Asset
       description: |-
         Updates configuration parameters for a digital asset.
+        This endpoint allows you to update configuration parameters for a specific digital asset, 
+        which is essential for managing and handling various assets in payment operations.
       tags:
         - Asset
       parameters:
@@ -291,6 +372,8 @@ paths:
       summary: List Contracts
       description: |-
         Retrieves all contract configurations.
+        This endpoint returns a list of all configured contracts, which are essential
+        for executing and validating payments on networks.
       tags:
         - Contract
       responses:
@@ -319,6 +402,8 @@ paths:
       summary: Get Contract
       description: |-
         Retrieves configuration details for a specific smart contract.
+        This endpoint returns detailed configuration information for a specific contract,
+        which is essential for executing and validating payments on networks.
       tags:
         - Contract
       parameters:
@@ -348,6 +433,8 @@ paths:
       summary: Configure Contract
       description: |-
         Updates configuration parameters for a contract.
+        This endpoint allows you to update configuration parameters for a specific contract,
+        which is essential for executing and validating payments on networks.
       tags:
         - Contract
       parameters:
@@ -393,6 +480,8 @@ paths:
       summary: List Vaults
       description: |-
         Retrieves all vault configurations.
+        This endpoint returns a list of all vault configurations, which are essential for
+        organizing and processing payments while maintaining compliance.
       tags:
         - Vault
       responses:
@@ -421,6 +510,8 @@ paths:
       summary: Get Vault
       description: |-
         Retrieves configuration details for a specific vault.
+        This endpoint returns detailed configuration information for a specific vault,
+        which is essential for organizing and processing payments while maintaining compliance.
       tags:
         - Vault
       parameters:
@@ -912,7 +1003,7 @@ paths:
         description: |-
           Complete document configuration including document type and content. The 'type' field
           determines the document category (PersonV1, CustodialV1, or NonCustodialV1), and the
-          'doc' field contains the corresponding document data structure with all required fields.
+          'data' field contains the corresponding document data structure with all required fields.
         required: true
       responses:
         "200":
@@ -998,6 +1089,50 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
 
+  # QR-Code - Transaction
+  /api/v1/qrcode/transaction:
+    post:
+      operationId: GenerateWalletQrCodes
+      summary: Generate QR-Codes for wallets
+      description: |-
+        Generates the QR-Codes to be used by a wallet to help on the creation of a
+        transaction request.
+      tags:
+        - QR-Code
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractAmount"
+        description: |-
+          Contract-amount pair for which to generate the qr-codes.
+          The amount should represent the desired payment value in the contract's unit.
+        required: true
+      responses:
+        "200":
+          description: |-
+            QR-Code generated successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 1
+                items:
+                  $ref: "#/components/schemas/QrCode"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlHeader"
+        "400":
+          $ref: "#/components/responses/InvalidRequestResponse"
+        "401":
+          $ref: "#/components/responses/MissingAuthorizationResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        default:
+          $ref: "#/components/responses/DefaultResponse"
+
 components:
   headers:
     "CacheControlHeader":
@@ -1028,8 +1163,8 @@ components:
       name: assetUnit
       description: |-
         Ticker symbol for a digital asset (e.g., 'EUR', 'USDC', 'ETH', 'BTC').
-        Used to identify the specific cryptocurrency or token for contract operations,
-        payment processing, and vault management. Must match an existing configured asset.
+        Used to identify the specific asset for contract operations, payment
+        processing, and vault management. Must match an existing configured asset.
       schema:
         $ref: "#/components/schemas/AssetUnit"
       required: true
@@ -1134,38 +1269,69 @@ components:
       type: string
       description: |-
         String representation of a non-negative integer used for precise handling
-        of large cryptocurrency amounts without floating-point precision issues.
-        Supports values up to 78 digits to accommodate various token denominations
+        of large numbers without floating-point precision issues.
+        Supports values up to 78 digits to accommodate various asset denominations
         and high-precision calculations.
       pattern: "^[0-9]+$"
       minLength: 1
       maxLength: 78
+    "Number":
+      type: string
+      description: |-
+        String representation of a decimal number used for precise handling of large 
+        numbers without floating-point precision issues.
+        Supports values up to 78 digits to accommodate various asset denominations
+        and high-precision calculations.
+      pattern: "^[0-9]+(?:.[0-9]+)?$"
+      minLength: 1
+      maxLength: 79
     "Amount":
       type: object
       description: |-
-        Precise representation of a cryptocurrency amount combining a raw value
-        with decimal precision information. This structure ensures accurate
-        handling of token amounts across different assets with varying decimal places.
+        Precise representation of a amount combining a raw value with decimal precision
+        information. This structure ensures accurate handling of token amounts across 
+        different assets with varying decimal places.
+      anyOf:
+        - $ref: "#/components/schemas/AmountValue"
+        - $ref: "#/components/schemas/AmountRaw"
+    "AmountValue":
+      type: object
       properties:
         "value":
+          $ref: "#/components/schemas/Number"
+          description: |-
+            Amount value in the unit of the asset (e.g., btc).
+      required:
+        - "value"
+    "AmountRaw":
+      type: object
+      properties:
+        "raw":
           $ref: "#/components/schemas/UnsignedInteger"
           description: |-
-            Raw amount value in the smallest unit of the asset (e.g., wei for Ethereum).
+            Raw amount value in the smallest unit of the asset (e.g., satoshi for btc).
         "decimals":
           $ref: "#/components/schemas/Decimals"
           description: |-
             Number of decimal places to apply when displaying the amount to users.
       required:
-        - "value"
+        - "raw"
         - "decimals"
     "Decimals":
       type: integer
       description: |-
-        Number of decimal places used for displaying cryptocurrency amounts.
+        Number of decimal places used for displaying amounts.
         For example, USDC typically uses 6 decimals, while Ethereum uses 18.
         This determines how the raw value should be formatted for user presentation.
       minimum: 0
       maximum: 77
+    "Time":
+      type: integer
+      description: |-
+        Time in milliseconds representing an amount of time.
+        Used for expiration cut-offs, and other time-sensitive operations throughout 
+        the payment lifecycle.
+      minimum: 0
     "Timestamp":
       type: integer
       description: |-
@@ -1183,7 +1349,7 @@ components:
       type: string
       description: |-
         Valid HTTP or HTTPS URL pointing to external resources such as
-        asset websites, network documentation, or image assets. Must include
+        asset websites, network documentation, or media assets. Must include
         the protocol scheme and be properly formatted for web access.
       format: uri
       pattern: "^https?://.+$"
@@ -1271,6 +1437,101 @@ components:
         that doesn't fit into structured fields.
       maxLength: 800
 
+    # Media
+    "AssetMediaMap":
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/MediaMap"
+        - type: object
+          properties:
+            "logo-light":
+              $ref: "#/components/schemas/Media"
+            "logo-dark":
+              $ref: "#/components/schemas/Media"
+          required:
+            - "logo-light"
+            - "logo-dark"
+    "NetworkMediaMap":
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/MediaMap"
+        - type: object
+          properties:
+            "logo-light":
+              $ref: "#/components/schemas/Media"
+            "logo-dark":
+              $ref: "#/components/schemas/Media"
+          required:
+            - "logo-light"
+            - "logo-dark"
+    "MediaMap":
+      type: object
+      additionalProperties:
+        $ref: "#/components/schemas/Media"
+    "Media":
+      type: object
+      properties:
+        "type":
+          $ref: "#/components/schemas/MediaType"
+        "url":
+          $ref: "#/components/schemas/URL"
+        "metadata":
+          $ref: "#/components/schemas/MediaMetadata"
+      required:
+        - "type"
+        - "url"
+    "MediaType":
+      type: string
+      enum:
+        - "image"
+    "MediaMetadata":
+      type: object
+
+    # QR-Code
+    "QrCode":
+      type: object
+      description: |-
+        QR code representation for facilitating blockchain transactions.
+        Contains encoded payment instructions that can be scanned by cryptocurrency wallets
+        to initiate payments. Supports different QR code standards and encoding formats.
+      properties:
+        "type":
+          $ref: "#/components/schemas/QrCodeType"
+        "content":
+          type: string
+          description: |-
+            The encoded content of the QR code containing payment instructions
+            in a wallet-readable format.
+        "encoding":
+          $ref: "#/components/schemas/QrCodeEncoding"
+        "metadata":
+          $ref: "#/components/schemas/QrCodeMetadata"
+      required:
+        - "type"
+        - "content"
+        - "encoding"
+    "QrCodeType":
+      type: string
+      description: |-
+        Categorization of QR codes based on their payment functionality:
+        - 'crypto-address': Simple wallet address QR code
+        - 'crypto-payment': Payment request with embedded amount and asset details
+      enum:
+        - "crypto-address"
+        - "crypto-payment"
+    "QrCodeEncoding":
+      type: string
+      description: |-
+        Data encoding format used in the QR code content. 
+        Currently supports raw byte encoding for maximum compatibility 
+        with cryptocurrency wallets.
+      enum:
+        - "byte"
+    "QrCodeMetadata":
+      type: object
+      description: |-
+        Additional technical metadata related with the QR code .
+
     # Status/Error
     "Status":
       type: object
@@ -1333,7 +1594,7 @@ components:
       type: string
       description: |-
         Unique lowercase alphanumeric identifier for a network.
-        Examples include 'ethereum' for Ethereum mainnet, 'algorand' for Algorand,
+        Examples include 'ethereum' for Ethereum, 'algorand' for Algorand,
         or 'bitcoin' for Bitcoin. Used throughout the API to specify which 
         network operations should target.
       pattern: "^[a-z0-9]+$"
@@ -1357,8 +1618,8 @@ components:
       properties:
         "name":
           $ref: "#/components/schemas/FormalName"
-        "image":
-          $ref: "#/components/schemas/URL"
+        "media":
+          $ref: "#/components/schemas/NetworkMediaMap"
         "website":
           $ref: "#/components/schemas/URL"
         "status":
@@ -1373,7 +1634,7 @@ components:
           $ref: "#/components/schemas/Version"
       required:
         - "name"
-        - "image"
+        - "media"
         - "website"
         - "status"
         - "assets"
@@ -1430,8 +1691,8 @@ components:
       properties:
         "name":
           $ref: "#/components/schemas/FormalName"
-        "image":
-          $ref: "#/components/schemas/URL"
+        "media":
+          $ref: "#/components/schemas/AssetMediaMap"
         "website":
           $ref: "#/components/schemas/URL"
         "status":
@@ -1446,7 +1707,7 @@ components:
           $ref: "#/components/schemas/Version"
       required:
         - "name"
-        - "image"
+        - "media"
         - "website"
         - "status"
         - "networks"
@@ -1517,8 +1778,8 @@ components:
             $ref: "#/components/schemas/VaultId"
         "address":
           $ref: "#/components/schemas/NetworkAddress"
-        "decimals":
-          $ref: "#/components/schemas/Decimals"
+        "minor-unit":
+          $ref: "#/components/schemas/Amount"
         "note":
           $ref: "#/components/schemas/Note"
         "status":
@@ -1528,7 +1789,7 @@ components:
       required:
         - "vaults"
         - "address"
-        - "decimals"
+        - "minor-unit"
         - "status"
         - "version"
     "ContractConfig":
@@ -2215,6 +2476,10 @@ components:
           $ref: "#/components/schemas/Timestamp"
           description: |-
             Timestamp when this payment scenario expires and is no longer valid.
+        "expire-in":
+          $ref: "#/components/schemas/Time"
+          description: |-
+            Time remaining until this payment scenario expires and is no longer valid.
         "status":
           $ref: "#/components/schemas/PaymentCollectionScenarioStatus"
           description: |-
@@ -2234,6 +2499,7 @@ components:
         - "pay"
         - "address"
         - "expire-at"
+        - "expire-in"
         - "status"
         - "received"
         - "transaction-list"
