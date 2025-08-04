@@ -763,7 +763,7 @@ paths:
 
   # Vault - Payment Collection
   /api/v1/vault/{vaultId}/payment-collection:
-    post:
+    put:
       operationId: CreatePaymentCollection
       summary: Create Payment Collection
       description: |-
@@ -984,7 +984,7 @@ paths:
 
   # Vault - Document
   /api/v1/vault/{vaultId}/document:
-    post:
+    put:
       operationId: SubmitDocument
       summary: Submit Document
       description: |-
@@ -1339,6 +1339,20 @@ components:
         Used for tracking creation dates, expiration times, transaction timestamps,
         and other time-sensitive operations throughout the payment lifecycle.
       minimum: 0
+    "Expire":
+      type: object
+      properties:
+        "at":
+          $ref: "#/components/schemas/Timestamp"
+          description: |-
+            Timestamp when this payment scenario expires and is no longer valid.
+        "in":
+          $ref: "#/components/schemas/Time"
+          description: |-
+            Time remaining until this payment scenario expires and is no longer valid.
+      required:
+        - "at"
+        - "in"
     "Enabled":
       type: boolean
       description: |-
@@ -1995,6 +2009,8 @@ components:
           $ref: "#/components/schemas/DocumentStatusId"
         "details":
           $ref: "#/components/schemas/DocumentStatusDetails"
+        "expire":
+          $ref: "#/components/schemas/Expire"
       required:
         - "id"
         - "details"
@@ -2472,14 +2488,8 @@ components:
           $ref: "#/components/schemas/NetworkAddress"
           description: |-
             Blockchain address where payment should be sent for this scenario.
-        "expire-at":
-          $ref: "#/components/schemas/Timestamp"
-          description: |-
-            Timestamp when this payment scenario expires and is no longer valid.
-        "expire-in":
-          $ref: "#/components/schemas/Time"
-          description: |-
-            Time remaining until this payment scenario expires and is no longer valid.
+        "expire":
+          $ref: "#/components/schemas/Expire"
         "status":
           $ref: "#/components/schemas/PaymentCollectionScenarioStatus"
           description: |-
@@ -2498,8 +2508,7 @@ components:
         - "price"
         - "pay"
         - "address"
-        - "expire-at"
-        - "expire-in"
+        - "expire"
         - "status"
         - "received"
         - "transaction-list"
