@@ -1287,7 +1287,7 @@ components:
         numbers without floating-point precision issues.
         Supports values up to 78 digits to accommodate various asset denominations
         and high-precision calculations.
-      pattern: "^[0-9]+(?:.[0-9]+)?$"
+      pattern: "^[0-9]+(?:\\.[0-9]+)?$"
       minLength: 1
       maxLength: 79
     "Amount":
@@ -1526,14 +1526,8 @@ components:
         Additional technical metadata related with the QR code .
 
     # Traits
-    # Name[string] -> Property[string] -> any
     "Traits":
       type: object
-      properties:
-        "AcceptancePriceTrait":
-          $ref: "#/components/schemas/AcceptancePriceTrait"
-        "AcceptancePaymentTrait":
-          $ref: "#/components/schemas/AcceptancePaymentTrait"
       additionalProperties:
         $ref: "#/components/schemas/TraitProperties"
     "TraitProperties":
@@ -1801,6 +1795,16 @@ components:
       required:
         - "asset-unit"
         - "network-id"
+    "ContractTraits":
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Traits"
+        - type: object
+          properties:
+            "AcceptancePriceTrait":
+              $ref: "#/components/schemas/AcceptancePriceTrait"
+            "AcceptancePaymentTrait":
+              $ref: "#/components/schemas/AcceptancePaymentTrait"
     "ContractMediaMap":
       type: object
       allOf:
@@ -1844,7 +1848,7 @@ components:
         "minor-unit":
           $ref: "#/components/schemas/Amount"
         "traits":
-          $ref: "#/components/schemas/Traits"
+          $ref: "#/components/schemas/ContractTraits"
         "note":
           $ref: "#/components/schemas/Note"
         "status":
