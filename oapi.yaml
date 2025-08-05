@@ -35,7 +35,7 @@ tags:
   - name: Vault
     description: |-
       Vault lifecycle management and configuration.
-      These endpoints enable you to manage vaults, which are containers for payment collections,
+      These endpoints enable you to manage vaults, which are containers for payment acceptance,
       documents, and contract subscriptions. Vaults are essential for organizing and processing
       payments while maintaining compliance.
   - name: Vault - Contract Subscription
@@ -47,16 +47,16 @@ tags:
     description: |-
       Documents management within vaults.
       These endpoints allow you to submit, retrieve, and archive documents related to payment
-      collections, ensuring that all necessary compliance documents are managed efficiently.
+      acceptance, ensuring that all necessary compliance documents are managed efficiently.
   - name: Vault - Estimate
     description: |-
       Payment estimation for vault-based financial operations.
       This section provides endpoints for generating payment estimates, which helps in calculating
       the required payment amounts for various contracts and scenarios.
-  - name: Vault - Payment Collection
+  - name: Vault - Payment Acceptance
     description: |-
       Payment processing and transaction management for vault-based financial operations.
-      These endpoints enable you to create, retrieve, update, and archive payment collections,
+      These endpoints enable you to create, retrieve, update, and archive payment acceptance,
       which are essential for executing payments and tracking their status.
   - name: QR-Code
     description: |-
@@ -445,7 +445,7 @@ paths:
           Contract configuration parameters to update. Currently supports only the 'enabled' 
           field for controlling contract availability. When setting 'enabled' to false, the 
           contract will be disabled for payment processing while preserving all existing 
-          vault associations, payment collections, and historical transaction data.
+          vault associations, payment acceptance, and historical transaction data.
         content:
           application/json:
             schema:
@@ -761,24 +761,24 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
 
-  # Vault - Payment Collection
-  /api/v1/vault/{vaultId}/payment-collection:
+  # Vault - Payment Acceptance
+  /api/v1/vault/{vaultId}/payment-acceptance:
     put:
-      operationId: CreatePaymentCollection
-      summary: Create Payment Collection
+      operationId: CreatePaymentAcceptance
+      summary: Create Payment Acceptance
       description: |-
-        Initiates a new payment collection process.
+        Initiates a new payment acceptance process.
       tags:
-        - Vault - Payment Collection
+        - Vault - Payment Acceptance
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PaymentCollectionConfig"
+              $ref: "#/components/schemas/PaymentAcceptanceConfig"
         description: |-
-          Payment collection configuration including required payment scenarios and optional
+          Payment acceptance configuration including required payment scenarios and optional
           order context. The 'price-scenarios' list must contain at least one contract-amount
           pair and all contracts must be subscribed to the vault. Optional 'order' provides
           commercial context, and 'documents' can reference existing compliance documents.
@@ -786,10 +786,10 @@ paths:
       responses:
         "201":
           description: |-
-            Payment collection created successfully.
+            Payment acceptance created successfully.
           headers:
             Location:
-              description: URL of the created payment collection.
+              description: URL of the created payment acceptance.
               schema:
                 type: string
                 format: uri
@@ -798,7 +798,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaymentCollection"
+                $ref: "#/components/schemas/PaymentAcceptance"
         "400":
           $ref: "#/components/responses/InvalidRequestResponse"
         "401":
@@ -810,25 +810,25 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
 
-  /api/v1/vault/{vaultId}/payment-collection/{paymentCollectionId}:
+  /api/v1/vault/{vaultId}/payment-acceptance/{paymentAcceptanceId}:
     get:
-      operationId: GetPaymentCollection
-      summary: Get Payment Collection
+      operationId: GetPaymentAcceptance
+      summary: Get Payment Acceptance
       description: |-
-        Retrieves details of an existing payment collection.
+        Retrieves details of an existing payment acceptance.
       tags:
-        - Vault - Payment Collection
+        - Vault - Payment Acceptance
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
-        - $ref: "#/components/parameters/PaymentCollectionIdParam"
+        - $ref: "#/components/parameters/PaymentAcceptanceIdParam"
       responses:
         "200":
           description: |-
-            Payment collection details retrieved.
+            Payment acceptance details retrieved.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaymentCollection"
+                $ref: "#/components/schemas/PaymentAcceptance"
           headers:
             Cache-Control:
               $ref: "#/components/headers/CacheControlHeader"
@@ -841,22 +841,22 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
     patch:
-      operationId: UpdatePaymentCollection
-      summary: Update Payment Collection
+      operationId: UpdatePaymentAcceptance
+      summary: Update Payment Acceptance
       description: |-
-        Modifies configuration of an existing payment collection.
+        Modifies configuration of an existing payment acceptance.
       tags:
-        - Vault - Payment Collection
+        - Vault - Payment Acceptance
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
-        - $ref: "#/components/parameters/PaymentCollectionIdParam"
+        - $ref: "#/components/parameters/PaymentAcceptanceIdParam"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PaymentCollectionConfig"
+              $ref: "#/components/schemas/PaymentAcceptanceConfig"
         description: |-
-          Partial payment collection configuration for updates. Can be used to modify
+          Partial payment acceptance configuration for updates. Can be used to modify
           the 'documents' list to add or remove compliance document associations, or to
           update 'order' information. Core price scenarios cannot be modified after 
           creation.
@@ -864,11 +864,11 @@ paths:
       responses:
         "200":
           description: |-
-            Payment collection updated successfully.
+            Payment acceptance updated successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaymentCollection"
+                $ref: "#/components/schemas/PaymentAcceptance"
           headers:
             Cache-Control:
               $ref: "#/components/headers/CacheControlHeader"
@@ -883,23 +883,23 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
     delete:
-      operationId: ArchivePaymentCollection
-      summary: Archive Payment Collection
+      operationId: ArchivePaymentAcceptance
+      summary: Archive Payment Acceptance
       description: |-
-        Deactivates a payment collection while preserving historical records.
+        Deactivates a payment acceptance while preserving historical records.
       tags:
-        - Vault - Payment Collection
+        - Vault - Payment acceptance
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
-        - $ref: "#/components/parameters/PaymentCollectionIdParam"
+        - $ref: "#/components/parameters/PaymentAcceptanceIdParam"
       responses:
         "200":
           description: |-
-            Payment collection archived successfully.
+            Payment acceptance archived successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaymentCollection"
+                $ref: "#/components/schemas/PaymentAcceptance"
           headers:
             Cache-Control:
               $ref: "#/components/headers/CacheControlHeader"
@@ -912,29 +912,29 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
 
-  # Vault - Payment Collection - Document
-  /api/v1/vault/{vaultId}/payment-collection/{paymentCollectionId}/document/{documentId}:
+  # Vault - Payment Acceptance - Document
+  /api/v1/vault/{vaultId}/payment-acceptance/{paymentAcceptanceId}/document/{documentId}:
     put:
-      operationId: LinkPaymentCollectionDocument
-      summary: Link Document to Payment Collection
+      operationId: LinkPaymentAcceptanceDocument
+      summary: Link Document to Payment Acceptance
       description: |-
-        Associates a document with a payment collection.
+        Associates a document with a payment acceptance.
         Supported document types: personal identification, entity documentation, 
         wallet verification data.
       tags:
-        - Vault - Payment Collection
+        - Vault - Payment Acceptance
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
-        - $ref: "#/components/parameters/PaymentCollectionIdParam"
+        - $ref: "#/components/parameters/PaymentAcceptanceIdParam"
         - $ref: "#/components/parameters/DocumentIdParam"
       responses:
         "200":
           description: |-
-            Document successfully linked to payment collection.
+            Document successfully linked to payment acceptance.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaymentCollection"
+                $ref: "#/components/schemas/PaymentAcceptance"
           headers:
             Cache-Control:
               $ref: "#/components/headers/CacheControlHeader"
@@ -949,25 +949,25 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
     delete:
-      operationId: UnlinkPaymentCollectionDocument
-      summary: Unlink Document from Payment Collection
+      operationId: UnlinkPaymentAcceptanceDocument
+      summary: Unlink Document from Payment Acceptance
       description: |-
-        Removes document association from active consideration in payment collection
+        Removes document association from active consideration in payment acceptance
         while retaining it for audit purposes.
       tags:
-        - Vault - Payment Collection
+        - Vault - Payment Acceptance
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
-        - $ref: "#/components/parameters/PaymentCollectionIdParam"
+        - $ref: "#/components/parameters/PaymentAcceptanceIdParam"
         - $ref: "#/components/parameters/DocumentIdParam"
       responses:
         "200":
           description: |-
-            Document successfully unlinked from payment collection.
+            Document successfully unlinked from payment acceptance.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaymentCollection"
+                $ref: "#/components/schemas/PaymentAcceptance"
           headers:
             Cache-Control:
               $ref: "#/components/headers/CacheControlHeader"
@@ -1006,16 +1006,21 @@ paths:
           'data' field contains the corresponding document data structure with all required fields.
         required: true
       responses:
-        "200":
+        "201":
           description: |-
             Document submitted successfully.
+          headers:
+            Location:
+              description: URL of the submitted document.
+              schema:
+                type: string
+                format: uri
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlHeader"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Document"
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/CacheControlHeader"
         "400":
           $ref: "#/components/responses/InvalidRequestResponse"
         "401":
@@ -1172,28 +1177,28 @@ components:
       in: path
       name: vaultId
       description: |-
-        Unique identifier for a vault container that manages payment collections,
+        Unique identifier for a vault container that manages payment acceptance,
         documents, and contract subscriptions. Used across all vault-related operations
         including payment processing, document management, and configuration updates.
       schema:
         $ref: "#/components/schemas/VaultId"
       required: true
-    "PaymentCollectionIdParam":
+    "PaymentAcceptanceIdParam":
       in: path
-      name: paymentCollectionId
+      name: paymentAcceptanceId
       description: |-
-        Unique identifier for a payment collection within a vault. Used to track
+        Unique identifier for a payment acceptance within a vault. Used to track
         specific payment requests, monitor transaction status, manage associated
         documents, and retrieve payment history and compliance information.
       schema:
-        $ref: "#/components/schemas/PaymentCollectionId"
+        $ref: "#/components/schemas/PaymentAcceptanceId"
       required: true
     "DocumentIdParam":
       in: path
       name: documentId
       description: |-
         Unique identifier for a compliance document within a vault. Used for
-        document retrieval, status checking, linking to payment collections,
+        document retrieval, status checking, linking to payment acceptance,
         and managing the document verification lifecycle.
       schema:
         $ref: "#/components/schemas/DocumentId"
@@ -1452,32 +1457,6 @@ components:
       maxLength: 800
 
     # Media
-    "AssetMediaMap":
-      type: object
-      allOf:
-        - $ref: "#/components/schemas/MediaMap"
-        - type: object
-          properties:
-            "logo-light":
-              $ref: "#/components/schemas/Media"
-            "logo-dark":
-              $ref: "#/components/schemas/Media"
-          required:
-            - "logo-light"
-            - "logo-dark"
-    "NetworkMediaMap":
-      type: object
-      allOf:
-        - $ref: "#/components/schemas/MediaMap"
-        - type: object
-          properties:
-            "logo-light":
-              $ref: "#/components/schemas/Media"
-            "logo-dark":
-              $ref: "#/components/schemas/Media"
-          required:
-            - "logo-light"
-            - "logo-dark"
     "MediaMap":
       type: object
       additionalProperties:
@@ -1545,6 +1524,35 @@ components:
       type: object
       description: |-
         Additional technical metadata related with the QR code .
+
+    # Traits
+    # Name[string] -> Property[string] -> any
+    "Traits":
+      type: object
+      properties:
+        "AcceptancePriceTrait":
+          $ref: "#/components/schemas/AcceptancePriceTrait"
+        "AcceptancePaymentTrait":
+          $ref: "#/components/schemas/AcceptancePaymentTrait"
+      additionalProperties:
+        $ref: "#/components/schemas/TraitProperties"
+    "TraitProperties":
+      type: object
+      additionalProperties: true
+    "AcceptancePriceTrait":
+      type: object
+      properties:
+        "min-amount":
+          $ref: "#/components/schemas/Amount"
+        "max-amount":
+          $ref: "#/components/schemas/Amount"
+    "AcceptancePaymentTrait":
+      type: object
+      properties:
+        "min-amount":
+          $ref: "#/components/schemas/Amount"
+        "max-amount":
+          $ref: "#/components/schemas/Amount"
 
     # Status/Error
     "Status":
@@ -1614,6 +1622,19 @@ components:
       pattern: "^[a-z0-9]+$"
       minLength: 1
       maxLength: 32
+    "NetworkMediaMap":
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/MediaMap"
+        - type: object
+          properties:
+            "logo-light":
+              $ref: "#/components/schemas/Media"
+            "logo-dark":
+              $ref: "#/components/schemas/Media"
+          required:
+            - "logo-light"
+            - "logo-dark"
     "NetworkStatus":
       type: string
       description: |-
@@ -1690,6 +1711,19 @@ components:
       pattern: "^[A-Z0-9]+$"
       minLength: 3
       maxLength: 8
+    "AssetMediaMap":
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/MediaMap"
+        - type: object
+          properties:
+            "logo-light":
+              $ref: "#/components/schemas/Media"
+            "logo-dark":
+              $ref: "#/components/schemas/Media"
+          required:
+            - "logo-light"
+            - "logo-dark"
     "AssetStatus":
       type: string
       description: |-
@@ -1767,6 +1801,19 @@ components:
       required:
         - "asset-unit"
         - "network-id"
+    "ContractMediaMap":
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/MediaMap"
+        - type: object
+          properties:
+            "logo-light":
+              $ref: "#/components/schemas/Media"
+            "logo-dark":
+              $ref: "#/components/schemas/Media"
+          required:
+            - "logo-light"
+            - "logo-dark"
     "ContractStatus":
       type: string
       description: |-
@@ -1792,8 +1839,12 @@ components:
             $ref: "#/components/schemas/VaultId"
         "address":
           $ref: "#/components/schemas/NetworkAddress"
+        "media":
+          $ref: "#/components/schemas/ContractMediaMap"
         "minor-unit":
           $ref: "#/components/schemas/Amount"
+        "traits":
+          $ref: "#/components/schemas/Traits"
         "note":
           $ref: "#/components/schemas/Note"
         "status":
@@ -1803,7 +1854,9 @@ components:
       required:
         - "vaults"
         - "address"
+        - "media"
         - "minor-unit"
+        - "traits"
         - "status"
         - "version"
     "ContractConfig":
@@ -1837,7 +1890,7 @@ components:
       description: |-
         Pairing of a specific contract with a precise amount value.
         Used throughout the API to specify payment amounts for particular
-        contracts in estimates, payment collections, and transaction records.
+        contracts in estimates, payment acceptance, and transaction records.
       properties:
         "contract-id":
           $ref: "#/components/schemas/ContractId"
@@ -2258,11 +2311,11 @@ components:
       required:
         - "address"
 
-    # Vault - Payment Collection - Compliance
+    # Vault - Payment Acceptance - Compliance
     "Compliance":
       type: object
       description: |-
-        Comprehensive compliance status and requirements for payment collections. 
+        Comprehensive compliance status and requirements for payment acceptance. 
         Tracks document submission requirements and validation status across 
         all contracts involved in payment processing.
       properties:
@@ -2270,7 +2323,7 @@ components:
           type: array
           description: |-
             Contract-specific compliance requirements and current status for 
-            each asset-network combination in the payment collection.
+            each asset-network combination in the payment acceptance.
           items:
             $ref: "#/components/schemas/ComplianceScenario"
       required:
@@ -2279,7 +2332,7 @@ components:
       type: object
       description: |-
         Compliance requirements and status for a specific contract within a 
-        payment collection. Tracks required document types, submitted documents, 
+        payment acceptance. Tracks required document types, submitted documents, 
         and overall compliance fulfillment status.
       properties:
         "contract-id":
@@ -2318,17 +2371,17 @@ components:
         - "pending"
         - "accepted"
 
-    # Vault - Payment Collection
-    "PaymentCollectionId":
+    # Vault - Payment Acceptance
+    "PaymentAcceptanceId":
       $ref: "#/components/schemas/UUID"
       description: |-
-        Unique identifier for payment collections using UUID format. 
+        Unique identifier for payment acceptance using UUID format. 
         Ensures global uniqueness across all vaults and payment processing 
         operations.
-    "PaymentCollectionOrder":
+    "PaymentAcceptanceOrder":
       type: object
       description: |-
-        Commercial order context and metadata associated with a payment collection. 
+        Commercial order context and metadata associated with a payment acceptance. 
         Provides business context for payment processing including order details, 
         descriptions, and structured metadata for integration with external systems.
       properties:
@@ -2354,17 +2407,17 @@ components:
             Order-specific data payload containing business information relevant 
             to the commercial transaction.
           additionalProperties: true
-    "PaymentCollectionInfo":
+    "PaymentAcceptanceInfo":
       type: object
       description: |-
-        Payment collection operational state and lifecycle information. Contains 
+        Payment acceptance operational state and lifecycle information. Contains 
         current processing status, payment scenarios, compliance state, and 
         version tracking for audit and monitoring purposes.
       properties:
         "status":
-          $ref: "#/components/schemas/PaymentCollectionStatus"
+          $ref: "#/components/schemas/PaymentAcceptanceStatus"
           description: |-
-            Current processing state of the payment collection.
+            Current processing state of the payment acceptance.
         "version":
           $ref: "#/components/schemas/Version"
           description: |-
@@ -2375,26 +2428,26 @@ components:
             Active payment execution scenarios with blockchain addresses, 
             amounts, and transaction tracking information.
           items:
-            $ref: "#/components/schemas/PaymentCollectionScenario"
+            $ref: "#/components/schemas/PaymentAcceptanceScenario"
         "compliance":
           $ref: "#/components/schemas/Compliance"
           description: |-
             Current compliance status and requirements for all contracts 
-            in this payment collection.
+            in this payment acceptance.
       required:
         - "status"
         - "version"
         - "scenarios"
         - "compliance"
-    "PaymentCollectionConfig":
+    "PaymentAcceptanceConfig":
       type: object
       description: |-
-        Payment collection configuration parameters including commercial order 
+        Payment acceptance configuration parameters including commercial order 
         context, payment scenarios, and document associations. Defines the 
         structure and requirements for payment processing operations.
       properties:
         "order":
-          $ref: "#/components/schemas/PaymentCollectionOrder"
+          $ref: "#/components/schemas/PaymentAcceptanceOrder"
           description: |-
             Optional commercial order context providing business information 
             about the transaction being processed.
@@ -2402,56 +2455,56 @@ components:
           type: array
           description: |-
             Required payment obligations as contract-amount pairs. Must contain 
-            at least one scenario when creating new payment collections.
+            at least one scenario when creating new payment acceptance.
           items:
             $ref: "#/components/schemas/ContractAmount"
         "documents":
           type: array
           description: |-
             Optional list of document IDs to associate with this payment 
-            collection for compliance purposes.
+            acceptance for compliance purposes.
           items:
             $ref: "#/components/schemas/DocumentId"
-    "PaymentCollection":
+    "PaymentAcceptance":
       type: object
       description: |-
-        Complete payment collection record managing the full lifecycle of payment 
+        Complete payment acceptance record managing the full lifecycle of payment 
         processing from initiation through completion. Combines configuration, 
         operational state, and compliance tracking for comprehensive payment management.
       properties:
         "id":
-          $ref: "#/components/schemas/PaymentCollectionId"
+          $ref: "#/components/schemas/PaymentAcceptanceId"
         "info":
-          $ref: "#/components/schemas/PaymentCollectionInfo"
+          $ref: "#/components/schemas/PaymentAcceptanceInfo"
         "config":
-          $ref: "#/components/schemas/PaymentCollectionConfig"
+          $ref: "#/components/schemas/PaymentAcceptanceConfig"
       required:
         - "id"
         - "info"
         - "config"
-    "PaymentCollectionStatus":
+    "PaymentAcceptanceStatus":
       type: object
       description: |-
-        Payment collection lifecycle state combining status classification with 
+        Payment acceptance lifecycle state combining status classification with 
         detailed information about current processing stage. Provides visibility 
         into payment progress and any issues requiring attention.
       properties:
         "id":
-          $ref: "#/components/schemas/PaymentCollectionStatusId"
+          $ref: "#/components/schemas/PaymentAcceptanceStatusId"
           description: |-
             Current processing state category.
         "details":
-          $ref: "#/components/schemas/PaymentCollectionStatusDetails"
+          $ref: "#/components/schemas/PaymentAcceptanceStatusDetails"
           description: |-
             Detailed human-readable information about current status including 
             progress updates, error messages, or completion confirmation.
       required:
         - "id"
         - "details"
-    "PaymentCollectionStatusId":
+    "PaymentAcceptanceStatusId":
       type: string
       description: |-
-        Payment collection processing state categories representing different 
+        Payment acceptance processing state categories representing different 
         stages in the payment lifecycle from compliance verification through 
         final confirmation or cancellation.
       enum:
@@ -2461,25 +2514,25 @@ components:
         - "confirmed"
         - "expired"
         - "cancelled"
-    "PaymentCollectionStatusDetails":
+    "PaymentAcceptanceStatusDetails":
       type: string
       description: |-
-        Detailed human-readable explanation of payment collection status 
+        Detailed human-readable explanation of payment acceptance status 
         including progress updates, error descriptions, completion confirmation, 
         or other relevant processing information.
       minLength: 0
       maxLength: 400
-    "PaymentCollectionScenario":
+    "PaymentAcceptanceScenario":
       type: object
       description: |-
-        Individual payment execution scenario within a payment collection. 
+        Individual payment execution scenario within a payment acceptance. 
         Contains all information needed for payment processing including amounts, 
         blockchain addresses, expiration times, and transaction tracking.
       properties:
         "price":
           $ref: "#/components/schemas/ContractAmount"
           description: |-
-            Original requested payment amount as specified in the payment collection.
+            Original requested payment amount as specified in the payment acceptance.
         "pay":
           $ref: "#/components/schemas/ContractAmount"
           description: |-
@@ -2491,7 +2544,7 @@ components:
         "expire":
           $ref: "#/components/schemas/Expire"
         "status":
-          $ref: "#/components/schemas/PaymentCollectionScenarioStatus"
+          $ref: "#/components/schemas/PaymentAcceptanceScenarioStatus"
           description: |-
             Current execution state of this payment scenario.
         "received":
@@ -2512,7 +2565,7 @@ components:
         - "status"
         - "received"
         - "transaction-list"
-    "PaymentCollectionScenarioStatus":
+    "PaymentAcceptanceScenarioStatus":
       type: string
       description: |-
         Payment scenario execution state indicating current processing stage 
