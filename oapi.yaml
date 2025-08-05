@@ -48,15 +48,10 @@ tags:
       Documents management within vaults.
       These endpoints allow you to submit, retrieve, and archive documents related to payment
       acceptance, ensuring that all necessary compliance documents are managed efficiently.
-  - name: Vault - Estimate
-    description: |-
-      Payment estimation for vault-based financial operations.
-      This section provides endpoints for generating payment estimates, which helps in calculating
-      the required payment amounts for various contracts and scenarios.
-  - name: Vault - Payment Acceptance
+  - name: Vault - Payment
     description: |-
       Payment processing and transaction management for vault-based financial operations.
-      These endpoints enable you to create, retrieve, update, and archive payment acceptance,
+      These endpoints enable you to estimate, create, retrieve, update, and archive payments,
       which are essential for executing payments and tracking their status.
   - name: QR-Code
     description: |-
@@ -714,16 +709,16 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
 
-  # Vault - Estimate
-  /api/v1/vault/{vaultId}/estimate:
+  # Vault - Payment
+  /api/v1/vault/{vaultId}/payment/estimate:
     post:
-      operationId: VaultGetEstimate
+      operationId: VaultGetPaymentEstimate
       summary: Generate Payment Estimate
       description: |-
         Calculates payment scenarios for specified contracts and amounts.
         Requires at least one contract-amount pair in the request body.
       tags:
-        - Vault - Estimate
+        - Vault - Payment
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
       requestBody:
@@ -746,7 +741,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Estimate"
+                $ref: "#/components/schemas/PaymentEstimate"
           headers:
             Cache-Control:
               $ref: "#/components/headers/CacheControlHeader"
@@ -761,15 +756,14 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
 
-  # Vault - Payment Acceptance
-  /api/v1/vault/{vaultId}/payment-acceptance:
+  /api/v1/vault/{vaultId}/payment/acceptance:
     put:
       operationId: CreatePaymentAcceptance
       summary: Create Payment Acceptance
       description: |-
         Initiates a new payment acceptance process.
       tags:
-        - Vault - Payment Acceptance
+        - Vault - Payment
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
       requestBody:
@@ -810,14 +804,14 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
 
-  /api/v1/vault/{vaultId}/payment-acceptance/{paymentAcceptanceId}:
+  /api/v1/vault/{vaultId}/payment/acceptance/{paymentAcceptanceId}:
     get:
       operationId: GetPaymentAcceptance
       summary: Get Payment Acceptance
       description: |-
         Retrieves details of an existing payment acceptance.
       tags:
-        - Vault - Payment Acceptance
+        - Vault - Payment
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
         - $ref: "#/components/parameters/PaymentAcceptanceIdParam"
@@ -846,7 +840,7 @@ paths:
       description: |-
         Modifies configuration of an existing payment acceptance.
       tags:
-        - Vault - Payment Acceptance
+        - Vault - Payment
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
         - $ref: "#/components/parameters/PaymentAcceptanceIdParam"
@@ -888,7 +882,7 @@ paths:
       description: |-
         Deactivates a payment acceptance while preserving historical records.
       tags:
-        - Vault - Payment acceptance
+        - Vault - Payment
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
         - $ref: "#/components/parameters/PaymentAcceptanceIdParam"
@@ -912,8 +906,8 @@ paths:
         default:
           $ref: "#/components/responses/DefaultResponse"
 
-  # Vault - Payment Acceptance - Document
-  /api/v1/vault/{vaultId}/payment-acceptance/{paymentAcceptanceId}/document/{documentId}:
+  # Vault - Payment - Acceptance - Document
+  /api/v1/vault/{vaultId}/payment/acceptance/{paymentAcceptanceId}/document/{documentId}:
     put:
       operationId: LinkPaymentAcceptanceDocument
       summary: Link Document to Payment Acceptance
@@ -922,7 +916,7 @@ paths:
         Supported document types: personal identification, entity documentation, 
         wallet verification data.
       tags:
-        - Vault - Payment Acceptance
+        - Vault - Payment
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
         - $ref: "#/components/parameters/PaymentAcceptanceIdParam"
@@ -955,7 +949,7 @@ paths:
         Removes document association from active consideration in payment acceptance
         while retaining it for audit purposes.
       tags:
-        - Vault - Payment Acceptance
+        - Vault - Payment
       parameters:
         - $ref: "#/components/parameters/VaultIdParam"
         - $ref: "#/components/parameters/PaymentAcceptanceIdParam"
@@ -1894,7 +1888,7 @@ components:
       description: |-
         Pairing of a specific contract with a precise amount value.
         Used throughout the API to specify payment amounts for particular
-        contracts in estimates, payment acceptance, and transaction records.
+        contracts in payment estimates, acceptance, and transaction records.
       properties:
         "contract-id":
           $ref: "#/components/schemas/ContractId"
@@ -1955,49 +1949,6 @@ components:
         - "id"
         - "info"
         - "config"
-
-    # Vault - Estimate
-    "Estimate":
-      type: object
-      description: |-
-        Comprehensive payment estimation result providing calculated scenarios
-        and compliance requirements for requested contract amounts. Generated
-        in real-time to reflect current network conditions and fee structures.
-      properties:
-        "ts":
-          $ref: "#/components/schemas/Timestamp"
-          description: |-
-            Estimation generation timestamp.
-        "scenarios":
-          type: array
-          description: |-
-            Generated payment scenarios.
-          items:
-            $ref: "#/components/schemas/EstimateScenario"
-        "compliance":
-          $ref: "#/components/schemas/Compliance"
-      required:
-        - "ts"
-        - "scenarios"
-        - "compliance"
-    "EstimateScenario":
-      type: object
-      description: |-
-        Individual payment calculation scenario showing the relationship between
-        requested amounts and actual payment requirements including fees,
-        conversions, and network-specific adjustments.
-      properties:
-        "price":
-          $ref: "#/components/schemas/ContractAmount"
-          description: |-
-            Requested payment obligation.
-        "pay":
-          $ref: "#/components/schemas/ContractAmount"
-          description: |-
-            Calculated payment requirement.
-      required:
-        - "price"
-        - "pay"
 
     # Vault - Document
     "Document":
@@ -2315,7 +2266,7 @@ components:
       required:
         - "address"
 
-    # Vault - Payment Acceptance - Compliance
+    # Vault - Payment - Acceptance - Compliance
     "Compliance":
       type: object
       description: |-
@@ -2375,7 +2326,50 @@ components:
         - "pending"
         - "accepted"
 
-    # Vault - Payment Acceptance
+    # Vault - Payment - Estimate
+    "PaymentEstimate":
+      type: object
+      description: |-
+        Comprehensive payment estimation result providing calculated scenarios
+        and compliance requirements for requested contract amounts. Generated
+        in real-time to reflect current network conditions and fee structures.
+      properties:
+        "ts":
+          $ref: "#/components/schemas/Timestamp"
+          description: |-
+            Estimation generation timestamp.
+        "scenarios":
+          type: array
+          description: |-
+            Generated payment scenarios.
+          items:
+            $ref: "#/components/schemas/PaymentEstimateScenario"
+        "compliance":
+          $ref: "#/components/schemas/Compliance"
+      required:
+        - "ts"
+        - "scenarios"
+        - "compliance"
+    "PaymentEstimateScenario":
+      type: object
+      description: |-
+        Individual payment calculation scenario showing the relationship between
+        requested amounts and actual payment requirements including fees,
+        conversions, and network-specific adjustments.
+      properties:
+        "price":
+          $ref: "#/components/schemas/ContractAmount"
+          description: |-
+            Requested payment obligation.
+        "pay":
+          $ref: "#/components/schemas/ContractAmount"
+          description: |-
+            Calculated payment requirement.
+      required:
+        - "price"
+        - "pay"
+
+    # Vault - Payment - Acceptance
     "PaymentAcceptanceId":
       $ref: "#/components/schemas/UUID"
       description: |-
